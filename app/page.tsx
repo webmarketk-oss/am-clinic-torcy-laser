@@ -1,4 +1,5 @@
 "use client";
+/* AM CLINIC TORCY LASER — 1+1 + aisselles 9€ — PAS MARSEILLE 6 */
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
@@ -104,6 +105,15 @@ function track(eventName: string, params?: Record<string, unknown>) {
   window.fbq?.("track", eventName, params);
 }
 
+function postJson(url: string, body: unknown) {
+  void fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    keepalive: true,
+  }).catch(() => {});
+}
+
 function getTrackingParams() {
   if (typeof window === "undefined") return {};
   const params = new URLSearchParams(window.location.search);
@@ -197,13 +207,24 @@ export default function Home() {
 
     setIsSubmitting(true);
     try {
+      const nameParts = payload.full_name.trim().split(/\s+/).filter(Boolean);
+      const prenom = nameParts[0] ?? "";
+      const nom = nameParts.slice(1).join(" ");
       if (LEAD_WEBHOOK_URL) {
-        await fetch(LEAD_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+        postJson(LEAD_WEBHOOK_URL, payload);
       }
+      postJson(
+        "https://www.bookeai.fr/api/leads?center=am-clinic-torcy&source=landing",
+        {
+          first_name: prenom,
+          last_name: nom,
+          email: payload.email,
+          phone: payload.phone,
+          offre: "Laser 1+1 + aisselles 9€",
+          axe: "Laser",
+          commentaire: `Laser — 1 zone achetée = 1 offerte + aisselles 9€ — zones : ${selectedZones.join(", ") || "non précisé"} | Contact message : ${messageOptIn}`,
+        },
+      );
       track("Lead", {
         content_name: "1+1 laser + aisselles 9€",
         center: CITY_NAME,
