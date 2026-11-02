@@ -1,5 +1,4 @@
 "use client";
-/* AM CLINIC TORCY LASER — 1+1 + aisselles 9€ — PAS MARSEILLE 6 */
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
@@ -12,8 +11,8 @@ declare global {
 
 const LEAD_WEBHOOK_URL = process.env.NEXT_PUBLIC_LEAD_WEBHOOK_URL;
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-const CENTER_NAME = "AM Clinic";
-const CITY_NAME = "Torcy";
+const CENTER_NAME = process.env.NEXT_PUBLIC_CENTER_NAME || "Dépil Tech";
+const CITY_NAME = process.env.NEXT_PUBLIC_CITY_NAME || "Marseille 6";
 
 const zones = [
   "Aisselles",
@@ -26,68 +25,39 @@ const zones = [
   "Plusieurs zones",
 ];
 
-const highlights = [
-  {
-    title: "1 zone achetée = 1 offerte",
-    text: "Vous payez une zone, la seconde est offerte. Offre valable en octobre, places limitées.",
-  },
-  {
-    title: "Aisselles à 9€",
-    text: "Testez le laser dès la première séance aisselles, à 9€ seulement.",
-  },
-  {
-    title: "Résultat durable",
-    text: "Moins de poils, moins de rasage, peau plus nette séance après séance.",
-  },
-  {
-    title: "On vous rappelle",
-    text: "Laissez vos coordonnées, l’équipe AM Clinic à Torcy bloque votre offre.",
-  },
-];
-
 const faq = [
   {
-    question: "1 zone achetée = 1 zone offerte, c’est vrai ?",
+    question: "Le test est-il vraiment offert ?",
     answer:
-      "Oui. Pour une zone achetée, une seconde zone vous est offerte. Le détail est validé au centre, selon les zones choisies. Offre octobre, quantité limitée.",
-  },
-  {
-    question: "La première séance aisselles est-elle vraiment à 9€ ?",
-    answer:
-      "Oui. Vous pouvez tester le laser sur les aisselles dès la première séance, à 9€.",
-  },
-  {
-    question: "Puis-je combiner le 1+1 et les aisselles à 9€ ?",
-    answer:
-      "Oui. L’offre octobre associe le 1 zone achetée = 1 zone offerte et la première séance aisselles à 9€. On vous confirme les zones au rappel.",
+      "Oui. Le test permet de vérifier la réaction de la peau avant de démarrer un protocole complet.",
   },
   {
     question: "Combien de séances faut-il prévoir ?",
     answer:
-      "Cela dépend de la zone, de la peau et du poil. Le premier rendez-vous sert à estimer le protocole adapté.",
+      "Cela dépend de la zone, du type de peau et du poil. Le bilan sert justement à estimer le protocole adapté.",
   },
   {
-    question: "L’offre est-elle limitée ?",
+    question: "Puis-je traiter plusieurs zones ?",
     answer:
-      "Oui. C’est l’offre octobre. Quantité limitée à ce tarif.",
+      "Oui, vous pouvez cocher plusieurs zones. L'équipe vous proposera ensuite l'offre la plus adaptée.",
+  },
+  {
+    question: "L'épilation définitive convient-elle à tout le monde ?",
+    answer:
+      "Certaines situations demandent un avis préalable. Le bilan permet de vérifier les indications et contre-indications.",
   },
 ];
 
 const beforeAfter = [
   {
-    area: "Aisselles",
-    result: "Moins de poils, peau plus nette",
-    src: "/before-after-aisselles.jpg",
-  },
-  {
     area: "Irritations",
-    result: "Fini les poils incarnés du rasage",
+    result: "Peau plus nette après protocole",
     src: "/before-after-irritations.jpg",
   },
   {
-    area: "Jambe",
-    result: "Routine rasage fortement réduite",
-    src: "/before-after-jambe.jpg",
+    area: "Aisselles",
+    result: "Moins de poils visibles au quotidien",
+    src: "/before-after-aisselles.jpg",
   },
   {
     area: "Dos",
@@ -96,22 +66,24 @@ const beforeAfter = [
   },
   {
     area: "Aisselles",
-    result: "Zone plus propre, plus homogène",
+    result: "Zone plus propre et plus homogène",
     src: "/before-after-epaules.jpg",
   },
+  {
+    area: "Jambe",
+    result: "Routine rasage fortement réduite",
+    src: "/before-after-jambe.jpg",
+  },
+];
+
+const reviewFrames = [
+  { name: "Melanie Sauze", src: "/review-melanie-sauze.jpg" },
+  { name: "Samuel Gomes", src: "/review-samuel-gomes.jpg" },
+  { name: "Kenza Kenza", src: "/review-kenza-kenza.jpg" },
 ];
 
 function track(eventName: string, params?: Record<string, unknown>) {
   window.fbq?.("track", eventName, params);
-}
-
-function postJson(url: string, body: unknown) {
-  void fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-    keepalive: true,
-  }).catch(() => {});
 }
 
 function getTrackingParams() {
@@ -167,7 +139,7 @@ export default function Home() {
     track("PageView");
     track("ViewContent", {
       center: CITY_NAME,
-      content_name: "Tunnel laser AM Clinic",
+      content_name: "Tunnel épilation définitive Dépil Tech",
     });
   }, []);
 
@@ -197,9 +169,9 @@ export default function Home() {
       zones: selectedZones,
       center: CITY_NAME,
       center_display_name: `${CENTER_NAME} ${CITY_NAME}`,
-      offer: "1 zone achetée = 1 zone offerte + première séance aisselles 9€",
-      page: `Laser ${CENTER_NAME} ${CITY_NAME}`,
-      source: "am-clinic-torcy-laser",
+      offer: "Bilan laser offert + test offert + jusqu'à -30%",
+      page: `Épilation définitive ${CENTER_NAME} ${CITY_NAME}`,
+      source: "depil-tech-marseille-6",
       submitted_at: new Date().toISOString(),
       page_url: typeof window !== "undefined" ? window.location.href : "",
       ...trackingParams,
@@ -207,26 +179,39 @@ export default function Home() {
 
     setIsSubmitting(true);
     try {
+      if (LEAD_WEBHOOK_URL) {
+        await fetch(LEAD_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
+
       const nameParts = payload.full_name.trim().split(/\s+/).filter(Boolean);
       const prenom = nameParts[0] ?? "";
       const nom = nameParts.slice(1).join(" ");
-      if (LEAD_WEBHOOK_URL) {
-        postJson(LEAD_WEBHOOK_URL, payload);
+      try {
+        await fetch(
+          "https://www.bookeai.fr/api/leads?center=depil-tech-marseille-6-prefecture&source=landing",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              first_name: prenom,
+              last_name: nom,
+              email: payload.email,
+              phone: payload.phone,
+              offre: "Épilation laser Marseille 6",
+              commentaire: `Zones à traiter : ${selectedZones.join(", ") || "non précisé"}`,
+            }),
+          },
+        );
+      } catch {
+        // Bookea ne doit pas bloquer la demande Marseille 6.
       }
-      postJson(
-        "https://www.bookeai.fr/api/leads?center=am-clinic-torcy&source=landing",
-        {
-          first_name: prenom,
-          last_name: nom,
-          email: payload.email,
-          phone: payload.phone,
-          offre: "Laser 1+1 + aisselles 9€",
-          axe: "Laser",
-          commentaire: `Laser — 1 zone achetée = 1 offerte + aisselles 9€ — zones : ${selectedZones.join(", ") || "non précisé"} | Contact message : ${messageOptIn}`,
-        },
-      );
+
       track("Lead", {
-        content_name: "1+1 laser + aisselles 9€",
+        content_name: "Bilan laser offert",
         center: CITY_NAME,
         zones: selectedZones.join(", "),
       });
@@ -238,24 +223,31 @@ export default function Home() {
 
   return (
     <main className="site-shell">
-      <header className="site-header" aria-label="AM Clinic">
+      <header className="site-header" aria-label="Dépil Tech">
         <img
-          alt="AM Esthetic Clinic"
+          alt="Dépil Tech"
           className="brand-logo"
-          src="/am-clinic-logo.png"
+          src="/depil-tech-logo.png"
         />
       </header>
 
       <section className="hero-section" aria-labelledby="page-title">
         <div className="hero-copy">
-          <p className="eyebrow">Quantité limitée</p>
-          <h1 id="page-title">1 zone achetée = 1 zone offerte</h1>
-          <p className="hero-subtitle">1ère séance aisselles 9€</p>
+          <p className="eyebrow">Jusqu&apos;à -30% cette semaine</p>
+          <h1 id="page-title">2 étapes pour demander votre offre</h1>
+          <p className="hero-subtitle">Test offert avant de commencer</p>
+          <p className="hero-city">Marseille 6</p>
+          <div className="trust-row" aria-label="Éléments de confiance">
+            <span>Test offert</span>
+            <span>Jusqu&apos;à -30%</span>
+            <span>Bilan personnalisé</span>
+            <span>Réponse rapide</span>
+          </div>
         </div>
 
         <div
           className="before-after-carousel"
-          aria-label="Avant après épilation laser"
+          aria-label="Avant après épilation définitive"
         >
           <div className="before-after-track">
             {[...beforeAfter, ...beforeAfter].map((item, index) => (
@@ -265,7 +257,7 @@ export default function Home() {
               >
                 <div className="photo-pair">
                   <img
-                    alt={`Avant après épilation laser - ${item.area}`}
+                    alt={`Avant après épilation définitive - ${item.area}`}
                     decoding="async"
                     fetchPriority={index === 0 ? "high" : "auto"}
                     height={465}
@@ -287,9 +279,16 @@ export default function Home() {
       {step === "intro" && (
         <section className="quiz-panel" aria-labelledby="zone-question">
           <div>
-            <p className="offer-ready">Votre offre</p>
-            <p className="step-label">2 étapes pour bloquer le tarif</p>
-            <h2 id="zone-question">Quelle(s) zone(s) voulez-vous traiter ?</h2>
+            <p className="offer-ready">Votre offre est presque prête</p>
+            <p className="step-label">
+              2 étapes pour demander votre séance TEST OFFERTE et votre offre
+              jusqu&apos;à -30%
+            </p>
+            <h2 id="zone-question">Quelle(s) zone(s) souhaitez-vous traiter ?</h2>
+            <p className="helper-text">
+              Vous pouvez cocher plusieurs zones si vous souhaitez une offre
+              groupée.
+            </p>
           </div>
 
           <div className="zone-grid">
@@ -318,9 +317,8 @@ export default function Home() {
             onClick={openForm}
             type="button"
           >
-            Je profite de l&apos;offre
+            Voir mon offre
           </button>
-          <p className="offer-limit">Quantité limitée à ce tarif</p>
         </section>
       )}
 
@@ -333,11 +331,15 @@ export default function Home() {
           >
             Retour
           </button>
-          <p className="offer-ready">Dernière étape pour le 1+1 et les 9€</p>
-          <p className="step-label">On vous rappelle pour bloquer l’offre</p>
+          <p className="offer-ready">Votre offre est presque prête</p>
+          <p className="step-label">Dernière étape</p>
           <h2 id="form-title">
-            Vos coordonnées pour 1 zone achetée = 1 offerte + aisselles à 9€.
+            Remplissez vos coordonnées pour accéder à votre offre jusqu&apos;à
+            -30%.
           </h2>
+          <p className="helper-text">
+            Zone(s) à traiter : {selectedZones.join(", ")}
+          </p>
 
           <form className="lead-form" onSubmit={submitLead}>
             <label>
@@ -355,7 +357,7 @@ export default function Home() {
               />
             </label>
             <label>
-              Email (optionnel)
+              Email
               <input
                 inputMode="email"
                 name="email"
@@ -396,9 +398,8 @@ export default function Home() {
               disabled={isSubmitting}
               type="submit"
             >
-              {isSubmitting ? "Envoi en cours..." : "Je profite de l'offre"}
+              {isSubmitting ? "Envoi en cours..." : "Je profite de mon offre"}
             </button>
-            <p className="offer-limit">Quantité limitée à ce tarif</p>
           </form>
         </section>
       )}
@@ -406,27 +407,30 @@ export default function Home() {
       {step === "thanks" && (
         <section className="thanks-panel" aria-labelledby="thanks-title">
           <p className="step-label">Demande reçue</p>
-          <h2 id="thanks-title">Merci, votre offre est bien demandée.</h2>
+          <h2 id="thanks-title">Merci, votre demande est bien prise en compte.</h2>
           <p>
-            L&apos;équipe AM Clinic à Torcy vous rappelle rapidement pour
-            confirmer le 1 zone achetée = 1 zone offerte et la première séance
-            aisselles à 9€.
+            Une personne de l&apos;équipe Dépil Tech à Marseille 6 vous
+            contactera rapidement pour valider votre offre et confirmer votre
+            créneau.
           </p>
         </section>
       )}
 
-      <section className="proof-section" aria-labelledby="offer-title">
-        <h2 id="offer-title">Pourquoi ça vaut le coup maintenant</h2>
-        <p className="idiag-text">
-          Offre octobre uniquement : vous doublez une zone, et vous testez le
-          laser dès 9€ sur les aisselles.
-        </p>
-        <div className="tech-grid">
-          {highlights.map((item) => (
-            <article className="tech-card" key={item.title}>
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-            </article>
+      <section className="proof-section" aria-labelledby="proof-title">
+        <h2 id="proof-title">Ce que nos clients disent de nous</h2>
+        <div className="review-grid">
+          {reviewFrames.map((review) => (
+            <figure className="review-frame" key={review.name}>
+              <img
+                alt={`Avis Google de ${review.name}`}
+                decoding="async"
+                height={270}
+                loading="lazy"
+                src={review.src}
+                width={760}
+              />
+              <figcaption>Avis Google vérifié</figcaption>
+            </figure>
           ))}
         </div>
       </section>
@@ -445,3 +449,4 @@ export default function Home() {
     </main>
   );
 }
+
