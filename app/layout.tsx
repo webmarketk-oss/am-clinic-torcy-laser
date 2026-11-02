@@ -4,9 +4,9 @@ import "./globals.css";
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
 export const metadata: Metadata = {
-  title: "AM Clinic Torcy - 1 zone achetée = 1 offerte + aisselles 9€",
+  title: "Dépil Tech Marseille 6 - Bilan laser offert",
   description:
-    "Offre octobre AM Clinic Torcy. 1 zone achetée = 1 zone offerte. Première séance aisselles à 9€. Quantité limitée.",
+    "Épilation définitive Dépil Tech à Marseille 6. 2 étapes pour demander votre offre jusqu'à -30%, avec test offert avant de commencer.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
@@ -37,3 +37,4 @@ export default function RootLayout({
     </html>
   );
 }
+
