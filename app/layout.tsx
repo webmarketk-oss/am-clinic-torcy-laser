@@ -4,9 +4,9 @@ import "./globals.css";
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
 export const metadata: Metadata = {
-  title: "Dépil Tech Marseille 6 - Bilan laser offert",
+  title: "AM Clinic Torcy - Black November, -30 % et pack 99 €/mois",
   description:
-    "Épilation définitive Dépil Tech à Marseille 6. 2 étapes pour demander votre offre jusqu'à -30%, avec test offert avant de commencer.",
+    "Black November AM Clinic Torcy, quantité limitée. -30 % sur toutes nos cures. Aisselles + maillot + demi-jambes : 99 €/mois pendant 10 mois.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
@@ -37,4 +37,5 @@ export default function RootLayout({
     </html>
   );
 }
+
 
