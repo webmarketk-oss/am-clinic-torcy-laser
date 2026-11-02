@@ -1,4 +1,5 @@
 "use client";
+/* AM CLINIC TORCY LASER — Black November 99 — PAS MARSEILLE 6 */
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
@@ -11,10 +12,13 @@ declare global {
 
 const LEAD_WEBHOOK_URL = process.env.NEXT_PUBLIC_LEAD_WEBHOOK_URL;
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-const CENTER_NAME = process.env.NEXT_PUBLIC_CENTER_NAME || "Dépil Tech";
-const CITY_NAME = process.env.NEXT_PUBLIC_CITY_NAME || "Marseille 6";
+const CENTER_NAME = "AM Clinic";
+const CITY_NAME = "Torcy";
+const OFFER_LABEL =
+  "Black November — -30 % sur toutes nos cures + aisselles + maillot + demi-jambes 99 €/mois pendant 10 mois";
 
 const zones = [
+  "Aisselles + maillot + demi-jambes",
   "Aisselles",
   "Maillot",
   "Jambes complètes",
@@ -25,39 +29,68 @@ const zones = [
   "Plusieurs zones",
 ];
 
+const highlights = [
+  {
+    title: "Black November",
+    text: "Offre en quantité limitée. On bloque le tarif dès votre demande.",
+  },
+  {
+    title: "-30 % sur toutes nos cures",
+    text: "Toutes les cures laser AM Clinic sont à -30 % pendant Black November.",
+  },
+  {
+    title: "Aisselles + maillot + demi-jambes",
+    text: "99 €/mois pendant 10 mois, uniquement en quantité limitée.",
+  },
+  {
+    title: "On vous rappelle",
+    text: "Laissez vos coordonnées, l’équipe AM Clinic à Torcy confirme votre offre.",
+  },
+];
+
 const faq = [
   {
-    question: "Le test est-il vraiment offert ?",
+    question: "C’est quoi l’offre Black November ?",
     answer:
-      "Oui. Le test permet de vérifier la réaction de la peau avant de démarrer un protocole complet.",
+      "C’est une offre en quantité limitée : -30 % sur toutes nos cures, et le pack aisselles + maillot + demi-jambes à 99 €/mois pendant 10 mois.",
+  },
+  {
+    question: "Le -30 % concerne quelles cures ?",
+    answer:
+      "Toutes nos cures laser. Le détail des zones et du protocole est confirmé au rappel.",
+  },
+  {
+    question: "Le pack à 99 €/mois comprend quoi ?",
+    answer:
+      "Aisselles + maillot + demi-jambes, à 99 €/mois pendant 10 mois.",
   },
   {
     question: "Combien de séances faut-il prévoir ?",
     answer:
-      "Cela dépend de la zone, du type de peau et du poil. Le bilan sert justement à estimer le protocole adapté.",
+      "Cela dépend de la zone, de la peau et du poil. Le premier rendez-vous sert à estimer le protocole adapté.",
   },
   {
-    question: "Puis-je traiter plusieurs zones ?",
+    question: "L’offre est-elle limitée ?",
     answer:
-      "Oui, vous pouvez cocher plusieurs zones. L'équipe vous proposera ensuite l'offre la plus adaptée.",
-  },
-  {
-    question: "L'épilation définitive convient-elle à tout le monde ?",
-    answer:
-      "Certaines situations demandent un avis préalable. Le bilan permet de vérifier les indications et contre-indications.",
+      "Oui. Black November, quantité limitée à ce tarif.",
   },
 ];
 
 const beforeAfter = [
   {
+    area: "Aisselles",
+    result: "Moins de poils, peau plus nette",
+    src: "/before-after-aisselles.jpg",
+  },
+  {
     area: "Irritations",
-    result: "Peau plus nette après protocole",
+    result: "Fini les poils incarnés du rasage",
     src: "/before-after-irritations.jpg",
   },
   {
-    area: "Aisselles",
-    result: "Moins de poils visibles au quotidien",
-    src: "/before-after-aisselles.jpg",
+    area: "Jambe",
+    result: "Routine rasage fortement réduite",
+    src: "/before-after-jambe.jpg",
   },
   {
     area: "Dos",
@@ -66,24 +99,22 @@ const beforeAfter = [
   },
   {
     area: "Aisselles",
-    result: "Zone plus propre et plus homogène",
+    result: "Zone plus propre, plus homogène",
     src: "/before-after-epaules.jpg",
   },
-  {
-    area: "Jambe",
-    result: "Routine rasage fortement réduite",
-    src: "/before-after-jambe.jpg",
-  },
-];
-
-const reviewFrames = [
-  { name: "Melanie Sauze", src: "/review-melanie-sauze.jpg" },
-  { name: "Samuel Gomes", src: "/review-samuel-gomes.jpg" },
-  { name: "Kenza Kenza", src: "/review-kenza-kenza.jpg" },
 ];
 
 function track(eventName: string, params?: Record<string, unknown>) {
   window.fbq?.("track", eventName, params);
+}
+
+function postJson(url: string, body: unknown) {
+  void fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    keepalive: true,
+  }).catch(() => {});
 }
 
 function getTrackingParams() {
@@ -139,7 +170,7 @@ export default function Home() {
     track("PageView");
     track("ViewContent", {
       center: CITY_NAME,
-      content_name: "Tunnel épilation définitive Dépil Tech",
+      content_name: "Tunnel laser AM Clinic",
     });
   }, []);
 
@@ -169,9 +200,9 @@ export default function Home() {
       zones: selectedZones,
       center: CITY_NAME,
       center_display_name: `${CENTER_NAME} ${CITY_NAME}`,
-      offer: "Bilan laser offert + test offert + jusqu'à -30%",
-      page: `Épilation définitive ${CENTER_NAME} ${CITY_NAME}`,
-      source: "depil-tech-marseille-6",
+      offer: OFFER_LABEL,
+      page: `Laser ${CENTER_NAME} ${CITY_NAME}`,
+      source: "am-clinic-torcy-laser",
       submitted_at: new Date().toISOString(),
       page_url: typeof window !== "undefined" ? window.location.href : "",
       ...trackingParams,
@@ -179,39 +210,26 @@ export default function Home() {
 
     setIsSubmitting(true);
     try {
-      if (LEAD_WEBHOOK_URL) {
-        await fetch(LEAD_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-      }
-
       const nameParts = payload.full_name.trim().split(/\s+/).filter(Boolean);
       const prenom = nameParts[0] ?? "";
       const nom = nameParts.slice(1).join(" ");
-      try {
-        await fetch(
-          "https://www.bookeai.fr/api/leads?center=depil-tech-marseille-6-prefecture&source=landing",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              first_name: prenom,
-              last_name: nom,
-              email: payload.email,
-              phone: payload.phone,
-              offre: "Épilation laser Marseille 6",
-              commentaire: `Zones à traiter : ${selectedZones.join(", ") || "non précisé"}`,
-            }),
-          },
-        );
-      } catch {
-        // Bookea ne doit pas bloquer la demande Marseille 6.
+      if (LEAD_WEBHOOK_URL) {
+        postJson(LEAD_WEBHOOK_URL, payload);
       }
-
+      postJson(
+        "https://www.bookeai.fr/api/leads?center=am-clinic-torcy&source=landing",
+        {
+          first_name: prenom,
+          last_name: nom,
+          email: payload.email,
+          phone: payload.phone,
+          offre: "Black November 99",
+          axe: "Laser",
+          commentaire: `Black November — -30 % cures + aisselles + maillot + demi-jambes 99 €/mois 10 mois — zones : ${selectedZones.join(", ") || "non précisé"} | Contact message : ${messageOptIn}`,
+        },
+      );
       track("Lead", {
-        content_name: "Bilan laser offert",
+        content_name: "Black November 99",
         center: CITY_NAME,
         zones: selectedZones.join(", "),
       });
@@ -223,31 +241,26 @@ export default function Home() {
 
   return (
     <main className="site-shell">
-      <header className="site-header" aria-label="Dépil Tech">
+      <header className="site-header" aria-label="AM Clinic">
         <img
-          alt="Dépil Tech"
+          alt="AM Esthetic Clinic"
           className="brand-logo"
-          src="/depil-tech-logo.png"
+          src="/am-clinic-logo.png"
         />
       </header>
 
       <section className="hero-section" aria-labelledby="page-title">
         <div className="hero-copy">
-          <p className="eyebrow">Jusqu&apos;à -30% cette semaine</p>
-          <h1 id="page-title">2 étapes pour demander votre offre</h1>
-          <p className="hero-subtitle">Test offert avant de commencer</p>
-          <p className="hero-city">Marseille 6</p>
-          <div className="trust-row" aria-label="Éléments de confiance">
-            <span>Test offert</span>
-            <span>Jusqu&apos;à -30%</span>
-            <span>Bilan personnalisé</span>
-            <span>Réponse rapide</span>
-          </div>
+          <p className="eyebrow">Black November · quantité limitée</p>
+          <h1 id="page-title">-30 % sur toutes nos cures</h1>
+          <p className="hero-subtitle">
+            Aisselles + maillot + demi-jambes : 99 €/mois pendant 10 mois
+          </p>
         </div>
 
         <div
           className="before-after-carousel"
-          aria-label="Avant après épilation définitive"
+          aria-label="Avant après épilation laser"
         >
           <div className="before-after-track">
             {[...beforeAfter, ...beforeAfter].map((item, index) => (
@@ -257,7 +270,7 @@ export default function Home() {
               >
                 <div className="photo-pair">
                   <img
-                    alt={`Avant après épilation définitive - ${item.area}`}
+                    alt={`Avant après épilation laser - ${item.area}`}
                     decoding="async"
                     fetchPriority={index === 0 ? "high" : "auto"}
                     height={465}
@@ -279,16 +292,9 @@ export default function Home() {
       {step === "intro" && (
         <section className="quiz-panel" aria-labelledby="zone-question">
           <div>
-            <p className="offer-ready">Votre offre est presque prête</p>
-            <p className="step-label">
-              2 étapes pour demander votre séance TEST OFFERTE et votre offre
-              jusqu&apos;à -30%
-            </p>
-            <h2 id="zone-question">Quelle(s) zone(s) souhaitez-vous traiter ?</h2>
-            <p className="helper-text">
-              Vous pouvez cocher plusieurs zones si vous souhaitez une offre
-              groupée.
-            </p>
+            <p className="offer-ready">Black November · quantité limitée</p>
+            <p className="step-label">2 étapes pour bloquer le tarif</p>
+            <h2 id="zone-question">Quelle(s) zone(s) voulez-vous traiter ?</h2>
           </div>
 
           <div className="zone-grid">
@@ -317,8 +323,9 @@ export default function Home() {
             onClick={openForm}
             type="button"
           >
-            Voir mon offre
+            Je profite de l&apos;offre
           </button>
+          <p className="offer-limit">Quantité limitée à ce tarif</p>
         </section>
       )}
 
@@ -331,15 +338,11 @@ export default function Home() {
           >
             Retour
           </button>
-          <p className="offer-ready">Votre offre est presque prête</p>
-          <p className="step-label">Dernière étape</p>
+          <p className="offer-ready">Dernière étape Black November</p>
+          <p className="step-label">On vous rappelle pour bloquer l’offre</p>
           <h2 id="form-title">
-            Remplissez vos coordonnées pour accéder à votre offre jusqu&apos;à
-            -30%.
+            Vos coordonnées pour -30 % et le pack 99 €/mois pendant 10 mois.
           </h2>
-          <p className="helper-text">
-            Zone(s) à traiter : {selectedZones.join(", ")}
-          </p>
 
           <form className="lead-form" onSubmit={submitLead}>
             <label>
@@ -357,7 +360,7 @@ export default function Home() {
               />
             </label>
             <label>
-              Email
+              Email (optionnel)
               <input
                 inputMode="email"
                 name="email"
@@ -398,8 +401,9 @@ export default function Home() {
               disabled={isSubmitting}
               type="submit"
             >
-              {isSubmitting ? "Envoi en cours..." : "Je profite de mon offre"}
+              {isSubmitting ? "Envoi en cours..." : "Je profite de l'offre"}
             </button>
+            <p className="offer-limit">Quantité limitée à ce tarif</p>
           </form>
         </section>
       )}
@@ -407,30 +411,27 @@ export default function Home() {
       {step === "thanks" && (
         <section className="thanks-panel" aria-labelledby="thanks-title">
           <p className="step-label">Demande reçue</p>
-          <h2 id="thanks-title">Merci, votre demande est bien prise en compte.</h2>
+          <h2 id="thanks-title">Merci, votre offre est bien demandée.</h2>
           <p>
-            Une personne de l&apos;équipe Dépil Tech à Marseille 6 vous
-            contactera rapidement pour valider votre offre et confirmer votre
-            créneau.
+            L&apos;équipe AM Clinic à Torcy vous rappelle rapidement pour
+            confirmer le Black November : -30 % sur toutes nos cures, et
+            aisselles + maillot + demi-jambes à 99 €/mois pendant 10 mois.
           </p>
         </section>
       )}
 
-      <section className="proof-section" aria-labelledby="proof-title">
-        <h2 id="proof-title">Ce que nos clients disent de nous</h2>
-        <div className="review-grid">
-          {reviewFrames.map((review) => (
-            <figure className="review-frame" key={review.name}>
-              <img
-                alt={`Avis Google de ${review.name}`}
-                decoding="async"
-                height={270}
-                loading="lazy"
-                src={review.src}
-                width={760}
-              />
-              <figcaption>Avis Google vérifié</figcaption>
-            </figure>
+      <section className="proof-section" aria-labelledby="offer-title">
+        <h2 id="offer-title">Pourquoi ça vaut le coup maintenant</h2>
+        <p className="idiag-text">
+          Black November, quantité limitée : -30 % sur toutes nos cures, et
+          aisselles + maillot + demi-jambes à 99 €/mois pendant 10 mois.
+        </p>
+        <div className="tech-grid">
+          {highlights.map((item) => (
+            <article className="tech-card" key={item.title}>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </article>
           ))}
         </div>
       </section>
@@ -449,4 +450,3 @@ export default function Home() {
     </main>
   );
 }
-
